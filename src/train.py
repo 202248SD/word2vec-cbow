@@ -1,16 +1,21 @@
 import numpy as np
 from src.utils import softmax
+import random
 
-
-def train(w1, w2, data, one_hot, CW, lr, EPOCHS):
+def train(w1 : np.ndarray, w2 : np.array,
+          data : list[tuple[list[str], str]],
+          one_hot : dict[str, int], cw : int, lr : float, epochs : int)\
+        -> tuple[list[float], list[float]]:
     count = len(data)
 
     losses = []
     accuracies = []
 
-    for epoch in range(EPOCHS):
+    for epoch in range(epochs):
         total_loss = 0
         correct = 0
+
+        random.shuffle(data)
 
         for context, target in data:
             indices = [one_hot[word] for word in context]
@@ -31,7 +36,7 @@ def train(w1, w2, data, one_hot, CW, lr, EPOCHS):
             w2 -= lr * d_w2
 
             for idx in indices:
-                w1[idx] -= lr * d_h / (2 * CW)
+                w1[idx] -= lr * d_h / (2 * cw)
 
             # Calculate metrics
             loss = -np.log(probs[one_hot[target]]+1e-9)
@@ -42,7 +47,11 @@ def train(w1, w2, data, one_hot, CW, lr, EPOCHS):
 
         avg_loss = total_loss / count
         acc = correct / count
-        print(f"\nEpoch {epoch+1}/{EPOCHS}")
+
+        losses.append(avg_loss)
+        accuracies.append(acc)
+
+        print(f"\nEpoch {epoch+1}/{epochs}")
         print(f"Loss: {avg_loss:.4f}")
         print(f"Accuracy: {acc:.4f}")
 

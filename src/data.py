@@ -32,4 +32,5 @@ def preprocess_data(corpus : nltk.corpus, window : int) -> tuple[list[str], list
             context = window_words[:window]+window_words[window+1:]
 
             data.append((context, target))
+
     return vocab, data
